@@ -32,7 +32,7 @@ const TodoItem = ({ todo }: Props) => {
       </label>
 
       <span data-cy="TodoTitle" className="todo__title">
-        Completed Todo
+        {todo.title}
       </span>
 
       {/* Remove button appears only on hover */}

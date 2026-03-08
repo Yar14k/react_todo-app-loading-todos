@@ -1,16 +1,26 @@
-import { createTodo } from '../api/todos';
+import classNames from 'classnames';
+import { ErrorMessagesNotification } from '../api/todos';
 
-const CreateTodo: React.FC = () => {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+type Props = {
+  onAdd: (title: string) => Promise<void>;
+  allCompleted: boolean;
+  setError: (error: ErrorMessagesNotification | null) => void;
+};
+
+const CreateTodo: React.FC<Props> = ({ onAdd, allCompleted, setError }) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const todo = new FormData(form).get('todo') as string;
 
-    createTodo({
-      title: todo,
-      userId: 4059,
-      completed: false,
-    });
+    if (!todo.trim()) {
+      setError(ErrorMessagesNotification.EMPTY_TITLE);
+
+      return;
+    }
+
+    await onAdd(todo);
+    form.reset();
   };
 
   return (
@@ -18,8 +28,11 @@ const CreateTodo: React.FC = () => {
       {/* this button should have `active` class only if all todos are completed */}
       <button
         type="button"
-        className="todoapp__toggle-all active"
+        className={classNames(
+          `todoapp__toggle-all ${allCompleted ? 'active' : ''}`,
+        )}
         data-cy="ToggleAllButton"
+        disabled={allCompleted}
       />
 
       <form onSubmit={handleSubmit}>

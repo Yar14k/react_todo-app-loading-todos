@@ -2,6 +2,11 @@ import { useState } from 'react';
 import TodoItem from './TodoItem';
 import { getTodos } from '../api/todos';
 import { useEffect } from 'react';
+import CreateTodo from './CreateTodo';
+import { createTodo } from '../api/todos';
+import { USER_ID } from '../api/todos';
+import ErrorMessages from './ErrorMessages';
+import { ErrorMessagesNotification } from '../api/todos';
 
 type Todo = {
   id: number;
@@ -10,12 +15,30 @@ type Todo = {
   userId: number;
 };
 
-type Filter = 'all' | 'active' | 'completed';
+enum Filter {
+  All = 'all',
+  Active = 'active',
+  Completed = 'completed',
+}
 
-const TodoList = () => {
+const TodoList: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filter, setFilter] = useState<Filter>('all');
-  const [error, setError] = useState('');
+  const [filter, setFilter] = useState<Filter>(Filter.All);
+  const [error, setError] = useState<ErrorMessagesNotification | null>(null);
+
+  const handleAddTodo = async (title: string) => {
+    try {
+      const newTodo = await createTodo({
+        title,
+        userId: USER_ID,
+        completed: false,
+      });
+
+      setTodos(prev => [...prev, newTodo]);
+    } catch {
+      setError(ErrorMessagesNotification.ADD);
+    }
+  };
 
   useEffect(() => {
     const loadTodos = async () => {
@@ -23,32 +46,37 @@ const TodoList = () => {
         const data = await getTodos();
 
         setTodos(data);
-        setError('');
+        setError(null);
       } catch (err) {
-        setError('Unable to load todos');
+        setError(ErrorMessagesNotification.LOAD);
       }
-
     };
 
     loadTodos();
   }, []);
 
   const visibleTodos = todos.filter(todo => {
-    if (filter === 'active') {
+    if (filter === Filter.Active) {
       return !todo.completed;
     }
 
-    if (filter === 'completed') {
+    if (filter === Filter.Completed) {
       return todo.completed;
     }
 
     return true;
   });
 
+  const allCompleted = todos.length > 0 && todos.every(todo => todo.completed);
+
   return (
     <>
+      <CreateTodo
+        onAdd={handleAddTodo}
+        allCompleted={allCompleted}
+        setError={setError}
+      />
       <section className="todoapp__main" data-cy="TodoList">
-        {/* This is a completed todo */}
         {visibleTodos.map(todo => (
           <TodoItem key={todo.id} todo={todo} />
         ))}
@@ -63,27 +91,27 @@ const TodoList = () => {
           <nav className="filter" data-cy="Filter">
             <a
               href="#/"
-              className={`filtered__link ${filter === 'all' ? 'selected' : ''}`}
+              className={`filtered__link ${filter === Filter.All ? 'selected' : ''}`}
               data-cy="FilterLinkAll"
-              onClick={() => setFilter('all')}
+              onClick={() => setFilter(Filter.All)}
             >
               All
             </a>
 
             <a
               href="#/active"
-              className={`filtered__link ${filter === 'all' ? 'selected' : ''}`}
+              className={`filtered__link ${filter === Filter.Active ? 'selected' : ''}`}
               data-cy="FilterLinkActive"
-              onClick={() => setFilter('active')}
+              onClick={() => setFilter(Filter.Active)}
             >
               Active
             </a>
 
             <a
               href="#/completed"
-              className={`filtered__link ${filter === 'all' ? 'selected' : ''}`}
+              className={`filtered__link ${filter === Filter.Completed ? 'selected' : ''}`}
               data-cy="FilterLinkCompleted"
-              onClick={() => setFilter('completed')}
+              onClick={() => setFilter(Filter.Completed)}
             >
               Completed
             </a>
@@ -102,22 +130,7 @@ const TodoList = () => {
       )}
 
       {/* Add the 'hidden' class to hide the message smoothly */}
-       <div
-        data-cy="ErrorNotification"
-        className={`notification is-danger is-light has-text-weight-normal ${error ? '' : 'hidden'}`}
-      >
-        <button data-cy="HideErrorButton" type="button" className="delete" />
-        {/* show only one message at a time */}
-        Unable to load todos
-        <br />
-        Title should not be empty
-        <br />
-        Unable to add a todo
-        <br />
-        Unable to delete a todo
-        <br />
-        Unable to update a todo
-      </div>
+      <ErrorMessages error={error} setError={setError} />
     </>
   );
 };

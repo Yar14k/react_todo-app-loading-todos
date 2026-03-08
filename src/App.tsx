@@ -3,7 +3,6 @@
 import React from 'react';
 import { UserWarning } from './UserWarning';
 import { USER_ID } from './api/todos';
-import CreateTodo from './components/CreateTodo';
 import TodoList from './components/TodoList';
 
 export const App: React.FC = () => {
@@ -16,9 +15,8 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <CreateTodo />
         <TodoList />
       </div>
-      </div>
+    </div>
   );
 };
