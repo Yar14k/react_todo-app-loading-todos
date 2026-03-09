@@ -25,7 +25,6 @@ const CreateTodo: React.FC<Props> = ({ onAdd, allCompleted, setError }) => {
 
   return (
     <header className="todoapp__header">
-      {/* this button should have `active` class only if all todos are completed */}
       <button
         type="button"
         className={classNames(

@@ -9,7 +9,7 @@ export enum ErrorMessagesNotification {
   ADD = 'Unable to add a todo',
   DELETE = 'Unable to delete a todo',
   UPDATE = 'Unable to update a todo',
-};
+}
 
 export const getTodos = () => {
   return client.get<Todo[]>(`/todos?userId=${USER_ID}`);
