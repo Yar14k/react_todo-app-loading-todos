@@ -98,7 +98,7 @@ const TodoList: React.FC = () => {
         ))}
       </section>
       {todos.length > 0 && (
-        <footer className="todoapp_footer" data-cy="Footer">
+        <footer className="todoapp__footer" data-cy="Footer">
           <span className="todo-count" data-cy="TodosCounter">
             {todos.filter(todo => !todo.completed).length} items left
           </span>
@@ -109,7 +109,7 @@ const TodoList: React.FC = () => {
                 key={value}
                 href={href}
                 data-cy={cy}
-                className={`filtered__link ${filter === value ? 'selected' : ''}`}
+                className={`filter__link ${filter === value ? 'selected' : ''}`}
                 onClick={() => setFilter(value)}
               >
                 {label}
