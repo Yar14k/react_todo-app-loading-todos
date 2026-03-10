@@ -1,4 +1,6 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { deleteTodo } from '../api/todos';
+import classNames from 'classnames';
 type Todo = {
   id: number;
   title: string;
@@ -20,7 +22,11 @@ const TodoItem = ({ todo }: Props) => {
   };
 
   return (
-    <div data-cy="Todo" className={`todo ${todo.completed ? 'completed' : ''}`}>
+    <div
+      data-cy="Todo"
+      className={classNames('todo', { completed: todo.completed })}
+    // eslint-disable-next-line react/jsx-no-comment-textnodes
+    >
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
@@ -28,13 +34,10 @@ const TodoItem = ({ todo }: Props) => {
           className="todo__status"
           checked={todo.completed}
         />
-        Completed
       </label>
-
       <span data-cy="TodoTitle" className="todo__title">
         {todo.title}
       </span>
-
       <button
         type="button"
         className="todo__remove"
@@ -43,8 +46,7 @@ const TodoItem = ({ todo }: Props) => {
       >
         ×
       </button>
-
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div data-cy="TodoLoader" className="modal overlay hidden">
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

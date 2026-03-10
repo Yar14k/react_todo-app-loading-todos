@@ -27,9 +27,7 @@ const CreateTodo: React.FC<Props> = ({ onAdd, allCompleted, setError }) => {
     <header className="todoapp__header">
       <button
         type="button"
-        className={classNames(
-          `todoapp__toggle-all ${allCompleted ? 'active' : ''}`,
-        )}
+        className={classNames('todoapp__toggle-all', { active: allCompleted })}
         data-cy="ToggleAllButton"
         disabled={allCompleted}
       />
